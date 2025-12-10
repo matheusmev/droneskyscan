@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
   try {
+    console.log("OPENWEATHER KEY:", process.env.OPENWEATHER_KEY);
+
     const { city, drone } = req.query;
 
     const drones = {
