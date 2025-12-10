@@ -1,17 +1,22 @@
-{
-  "DJI Mini 2": { "category": "Mini", "maxWindKmh": 37, "notes": "Muito sensível a rajadas" },
-  "DJI Mini 3": { "category": "Mini", "maxWindKmh": 39, "notes": "" },
-  "DJI Mini 3 Pro": { "category": "Mini", "maxWindKmh": 39, "notes": "" },
-  "DJI Mini 4 Pro": { "category": "Mini", "maxWindKmh": 43, "notes": "" },
-  "DJI Air 2S": { "category": "Air", "maxWindKmh": 43, "notes": "" },
-  "DJI Air 3": { "category": "Air", "maxWindKmh": 46, "notes": "" },
-  "DJI Mavic 3": { "category": "Mavic", "maxWindKmh": 48, "notes": "" },
-  "DJI Mavic 3 Classic": { "category": "Mavic", "maxWindKmh": 48, "notes": "" },
-  "DJI Mavic 3 Pro": { "category": "Mavic", "maxWindKmh": 48, "notes": "" },
-  "DJI Mavic 3 Enterprise": { "category": "Mavic", "maxWindKmh": 50, "notes": "" },
-  "DJI Agras T10": { "category": "Agras", "maxWindKmh": 36, "notes": "Depende da carga" },
-  "DJI Agras T20P": { "category": "Agras", "maxWindKmh": 36, "notes": "" },
-  "DJI Agras T30": { "category": "Agras", "maxWindKmh": 44, "notes": "" },
-  "DJI Agras T40": { "category": "Agras", "maxWindKmh": 44, "notes": "" },
-  "DJI Agras T50": { "category": "Agras", "maxWindKmh": 47, "notes": "" }
-}
+[
+  { "name": "DJI Mini 2", "maxWind": 38 },
+  { "name": "DJI Mini 3", "maxWind": 38 },
+  { "name": "DJI Mini 3 Pro", "maxWind": 43 },
+  { "name": "DJI Mini 4 Pro", "maxWind": 45 },
+
+  { "name": "DJI Air 2S", "maxWind": 42 },
+  { "name": "DJI Air 3", "maxWind": 46 },
+
+  { "name": "DJI Mavic 2 Pro", "maxWind": 38 },
+  { "name": "DJI Mavic 3 Classic", "maxWind": 43 },
+  { "name": "DJI Mavic 3 Cine", "maxWind": 43 },
+  { "name": "DJI Mavic 3 Pro", "maxWind": 43 },
+
+  { "name": "DJI Matrice 300 RTK", "maxWind": 54 },
+  { "name": "DJI Matrice 350 RTK", "maxWind": 55 },
+
+  { "name": "DJI Agras T10", "maxWind": 27 },
+  { "name": "DJI Agras T20", "maxWind": 29 },
+  { "name": "DJI Agras T30", "maxWind": 36 },
+  { "name": "DJI Agras T40", "maxWind": 36 }
+]
