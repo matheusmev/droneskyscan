@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
   try {
+    console.log("ENV VARS:", process.env);
+
 console.log("OPENWEATHER KEY:", process.env.OPENWEATHER_API_KEY);
 
 const apiKey = process.env.OPENWEATHER_API_KEY;
