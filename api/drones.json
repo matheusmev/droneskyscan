@@ -1,0 +1,19 @@
+import fs from 'fs';
+import path from 'path';
+
+export default async function handler(req, res) {
+  const { city, drone } = req.query;
+
+  // Caminho absoluto para o json dentro da pasta /api
+  const filePath = path.join(process.cwd(), "api", "drones.json");
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  const drones = JSON.parse(fileContent);
+
+  const selected = drones.find(d => d.name === drone);
+
+  if (!selected) {
+    return res.status(404).json({ error: "Drone não encontrado." });
+  }
+
+  // resto do código…
+}
