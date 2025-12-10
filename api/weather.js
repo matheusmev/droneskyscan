@@ -1,5 +1,5 @@
 // api/weather.js (CommonJS)
-const drones = require("..api/drones.json");
+const drones = require("../drones.json");
 
 module.exports = async function handler(req, res) {
   try {
