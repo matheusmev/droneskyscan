@@ -1,19 +1,22 @@
-import fs from 'fs';
-import path from 'path';
+{
+  "DJI Mini 2": { "maxWindKmh": 38 },
+  "DJI Mini 3": { "maxWindKmh": 38 },
+  "DJI Mini 3 Pro": { "maxWindKmh": 43 },
+  "DJI Mini 4 Pro": { "maxWindKmh": 45 },
 
-export default async function handler(req, res) {
-  const { city, drone } = req.query;
+  "DJI Air 2S": { "maxWindKmh": 42 },
+  "DJI Air 3": { "maxWindKmh": 46 },
 
-  // Caminho absoluto para o json dentro da pasta /api
-  const filePath = path.join(process.cwd(), "api", "drones.json");
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const drones = JSON.parse(fileContent);
+  "DJI Mavic 2 Pro": { "maxWindKmh": 38 },
+  "DJI Mavic 3 Classic": { "maxWindKmh": 43 },
+  "DJI Mavic 3 Cine": { "maxWindKmh": 43 },
+  "DJI Mavic 3 Pro": { "maxWindKmh": 43 },
 
-  const selected = drones.find(d => d.name === drone);
+  "DJI Matrice 300 RTK": { "maxWindKmh": 54 },
+  "DJI Matrice 350 RTK": { "maxWindKmh": 55 },
 
-  if (!selected) {
-    return res.status(404).json({ error: "Drone não encontrado." });
-  }
-
-  // resto do código…
+  "DJI Agras T10": { "maxWindKmh": 27 },
+  "DJI Agras T20": { "maxWindKmh": 29 },
+  "DJI Agras T30": { "maxWindKmh": 36 },
+  "DJI Agras T40": { "maxWindKmh": 36 }
 }
