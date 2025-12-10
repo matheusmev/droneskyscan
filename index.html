@@ -59,3 +59,180 @@
       >
         🌙 Modo escuro
       </button>
+    </header>
+
+    <!-- MAIN CARD -->
+    <main class="p-6 rounded-3xl bg-white/70 dark:bg-slate-900/50 shadow-xl backdrop-blur-xl border border-slate-200/40 dark:border-slate-700/40">
+
+      <!-- Inputs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-1 opacity-70">Modelo do drone</label>
+          <select
+            id="droneSelect"
+            class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/60 dark:bg-slate-800/40 backdrop-blur-md focus:ring-2 focus:ring-primary transition"
+          ></select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1 opacity-70">Cidade</label>
+          <input
+            id="cityInput"
+            class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white/60 dark:bg-slate-800/40 backdrop-blur-md focus:ring-2 focus:ring-primary transition"
+            placeholder="Ex: Tramandaí, BR"
+            value="Porto Alegre, BR"
+          />
+        </div>
+
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-3 mb-6">
+        <button
+          id="checkBtn"
+          class="px-5 py-3 rounded-xl bg-primary text-white font-semibold shadow hover:scale-[1.03] transition"
+        >
+          Ver condições
+        </button>
+
+        <button
+          id="demoBtn"
+          class="px-5 py-3 rounded-xl border border-slate-400 dark:border-slate-700 bg-white/40 dark:bg-slate-800/30 backdrop-blur-md hover:scale-105 transition"
+        >
+          Demo
+        </button>
+      </div>
+
+      <div id="summary" class="mb-6 fade"></div>
+
+      <div id="hoursArea" class="grid gap-4 fade"></div>
+
+      <p class="text-xs mt-6 opacity-60">Vento mostrado em <strong>KM/h</strong> e <strong>MPH</strong>.</p>
+    </main>
+  </div>
+
+<script>
+  /* ========== THEME MODE ========== */
+
+  const themeBtn = document.getElementById("themeBtn");
+
+  // Carregar tema salvo
+  if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.classList.add("dark");
+    themeBtn.textContent = "☀️ Modo claro";
+  }
+
+  themeBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    themeBtn.textContent = isDark ? "☀️ Modo claro" : "🌙 Modo escuro";
+  });
+
+  /* ========== LOAD DRONES ========== */
+
+  async function loadDrones() {
+    const resp = await fetch("/drones.json");
+    const drones = await resp.json();
+
+    const select = document.getElementById("droneSelect");
+
+    Object.keys(drones).forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = `${name} — ${drones[name].category}`;
+      select.appendChild(opt);
+    });
+  }
+
+  loadDrones();
+
+  /* ========== FETCH DATA ========== */
+
+  const checkBtn = document.getElementById("checkBtn");
+  const cityInput = document.getElementById("cityInput");
+  const droneSelect = document.getElementById("droneSelect");
+  const summary = document.getElementById("summary");
+  const hoursArea = document.getElementById("hoursArea");
+  const demoBtn = document.getElementById("demoBtn");
+
+  demoBtn.addEventListener("click", () => {
+    const demos = ["Tramandaí, BR", "Porto Alegre, BR", "São Paulo, BR"];
+    cityInput.value = demos[Math.floor(Math.random() * demos.length)];
+    checkBtn.click();
+  });
+
+  checkBtn.addEventListener("click", async () => {
+    const drone = droneSelect.value;
+    const city = cityInput.value.trim();
+
+    summary.innerHTML = `<div class="text-center py-3 animate-pulse opacity-70">Carregando...</div>`;
+    hoursArea.innerHTML = "";
+
+    const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}&drone=${encodeURIComponent(drone)}`);
+    const data = await resp.json();
+
+    renderResults(data);
+  });
+
+  /* ========== RENDER UI ========== */
+
+  function statusColor(s) {
+    return s === "Seguro" ? "border-blue-300 bg-blue-50/50 dark:bg-blue-900/20" :
+           s === "Arriscado" ? "border-yellow-300 bg-yellow-50/50 dark:bg-yellow-900/20" :
+           "border-red-300 bg-red-50/50 dark:bg-red-900/20";
+  }
+
+  function renderResults(data) {
+
+    summary.innerHTML = `
+      <div class="p-4 rounded-2xl border ${statusColor(data.overall)} shadow fade">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm opacity-80">Drone:</div>
+            <div class="font-bold text-lg">${data.drone.name}</div>
+            <div class="text-xs opacity-60">Limite: ${data.drone.maxWindKmh} km/h</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xl font-bold">${data.overall}</div>
+            <div class="text-xs opacity-60">${data.overallMessage}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    hoursArea.innerHTML = "";
+
+    data.results.forEach(r => {
+      const time = new Date(r.time).toLocaleString("pt-BR", {
+        hour: "2-digit", minute: "2-digit",
+        day: "2-digit", month: "2-digit"
+      });
+
+      const card = document.createElement("div");
+      card.className = `p-4 rounded-2xl border shadow backdrop-blur-md ${statusColor(r.status)} fade`;
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold">${time}</div>
+            <div class="text-xs opacity-70">Temp: ${r.temp_c}°C · POP: ${(r.pop * 100).toFixed(0)}%</div>
+          </div>
+
+          <div class="text-right">
+            <div class="text-sm">Vento: ${r.wind.kmh} km/h · ${r.wind.mph} mph</div>
+            <div class="text-sm">Rajada: ${r.gust.kmh} km/h · ${r.gust.mph} mph</div>
+            <div class="mt-1 font-semibold">${r.status}</div>
+            <div class="text-xs opacity-60 mt-1">${r.humanMessage}</div>
+          </div>
+        </div>
+      `;
+
+      hoursArea.appendChild(card);
+    });
+  }
+
+</script>
+
+</body>
+</html>
