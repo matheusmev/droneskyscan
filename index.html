@@ -1,48 +1,168 @@
-<!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DroneSkyScan</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DroneSkyScan — Verificador de Voo</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#3b82f6',
-          },
-        },
-      },
-    };
-  </script>
+  <style>
+    :root { --primary: #0b74ff; }
+    [data-theme="dark"] { background-color: #071029; color: #e6f0ff; }
+  </style>
 </head>
+<body class="min-h-screen antialiased bg-white text-slate-900" data-theme="light">
+  <div class="max-w-4xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold" style="color:var(--primary)">DroneSkyScan</h1>
+        <p class="text-sm text-slate-500">Checa as condições de voo para o seu drone — próximas horas.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="themeBtn" class="px-3 py-1 rounded border">Dark</button>
+      </div>
+    </header>
 
-<body class="bg-gray-900 text-white min-h-screen">
+    <main class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+        <div class="md:col-span-2">
+          <label class="block text-sm mb-1">Modelo do drone</label>
+          <select id="droneSelect" class="w-full p-3 rounded border bg-white dark:bg-slate-800"></select>
+        </div>
 
-  <div class="max-w-xl mx-auto pt-10 px-5">
-    <h1 class="text-3xl font-bold text-primary text-center mb-6">DroneSkyScan</h1>
+        <div>
+          <label class="block text-sm mb-1">Cidade</label>
+          <input id="cityInput" class="w-full p-3 rounded border bg-white dark:bg-slate-800" placeholder="Ex: Porto Alegre, BR" value="Porto Alegre, BR"/>
+        </div>
+      </div>
 
-    <label class="block mb-2">Modelo do drone:</label>
-    <select id="droneModel" class="w-full p-3 rounded bg-gray-800 mb-4">
-      <option>DJI Mini 3 Pro</option>
-      <option>DJI Mini 4 Pro</option>
-    </select>
+      <div class="flex gap-3 mb-4">
+        <button id="checkBtn" class="px-4 py-2 rounded bg-[color:var(--primary)] text-white">Ver Condições</button>
+        <button id="demoBtn" class="px-4 py-2 rounded border">Demo</button>
+      </div>
 
-    <label class="block mb-2">Cidade:</label>
-    <input id="city" placeholder="Ex: Tramandaí"
-      class="w-full p-3 rounded bg-gray-800 mb-4" />
+      <div id="summary" class="mb-4"></div>
 
-    <button onclick="checkWeather()"
-      class="w-full p-3 mt-2 rounded bg-primary text-white font-bold hover:bg-blue-600">
-      Ver Condições de Voo
-    </button>
+      <div id="hoursArea" class="grid gap-3"></div>
 
-    <div id="result" class="mt-6"></div>
+      <p class="text-sm text-slate-400 mt-4">Velocidade do vento mostrada em <strong>KM/h</strong> e <strong>MPH</strong>.</p>
+    </main>
   </div>
 
-  <script src="/script.js"></script>
+<script>
+  // helpers
+  const kmhToMph = kmh => (kmh / 1.609344).toFixed(1);
+
+  // DOM
+  const droneSelect = document.getElementById("droneSelect");
+  const cityInput = document.getElementById("cityInput");
+  const checkBtn = document.getElementById("checkBtn");
+  const hoursArea = document.getElementById("hoursArea");
+  const summary = document.getElementById("summary");
+  const demoBtn = document.getElementById("demoBtn");
+  const themeBtn = document.getElementById("themeBtn");
+
+  // theme
+  themeBtn.addEventListener("click", () => {
+    const current = document.body.getAttribute("data-theme") || "light";
+    const next = current === "light" ? "dark" : "light";
+    document.body.setAttribute("data-theme", next);
+    themeBtn.textContent = next === "dark" ? "Light" : "Dark";
+    document.documentElement.classList.toggle("dark", next === "dark");
+  });
+
+  // fetch drones.json and populate dropdown
+  async function loadDrones() {
+    try {
+      const resp = await fetch('/drones.json');
+      const drones = await resp.json();
+      Object.keys(drones).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name + " — " + drones[name].category;
+        droneSelect.appendChild(opt);
+      });
+      droneSelect.selectedIndex = 0;
+    } catch (e) {
+      console.error("Erro ao carregar drones:", e);
+      droneSelect.innerHTML = '<option>DJI Mini 3 Pro</option>';
+    }
+  }
+
+  loadDrones();
+
+  demoBtn.addEventListener("click", () => {
+    const demos = ["Porto Alegre, BR", "Tramandaí, BR", "São Paulo, BR"];
+    cityInput.value = demos[Math.floor(Math.random()*demos.length)];
+    checkBtn.click();
+  });
+
+  checkBtn.addEventListener("click", async () => {
+    const drone = droneSelect.value;
+    const city = cityInput.value.trim();
+    if (!drone || !city) return alert("Escolhe o drone e a cidade primeiro.");
+
+    summary.innerHTML = `<div class="py-3">Carregando...</div>`;
+    hoursArea.innerHTML = "";
+
+    try {
+      const resp = await fetch(`/api/weather?drone=${encodeURIComponent(drone)}&city=${encodeURIComponent(city)}`);
+      const data = await resp.json();
+      if (!resp.ok) {
+        summary.innerHTML = `<div class="text-red-500">Erro: ${data.error || "Problema ao buscar"}</div>`;
+        return;
+      }
+      renderResults(data);
+    } catch (e) {
+      summary.innerHTML = `<div class="text-red-500">Erro de rede: ${e.message}</div>`;
+    }
+  });
+
+  function statusColor(status) {
+    if (status === "Seguro") return "bg-blue-50 border-blue-200";
+    if (status === "Arriscado") return "bg-yellow-50 border-yellow-300";
+    return "bg-red-50 border-red-300";
+  }
+
+  function renderResults(data) {
+    summary.innerHTML = `
+      <div class="flex items-center justify-between p-3 rounded border border-slate-200 dark:border-slate-700 ${data.overall === 'Seguro' ? 'bg-blue-50' : data.overall === 'Arriscado' ? 'bg-yellow-50' : 'bg-red-50'}">
+        <div>
+          <div class="text-sm">Drone: <strong>${data.drone.name}</strong></div>
+          <div class="text-xs text-slate-500">Limite recomendado: ${data.drone.maxWindKmh} km/h</div>
+        </div>
+        <div class="text-right">
+          <div class="text-lg font-semibold">${data.overall}</div>
+          <div class="text-xs text-slate-500">${data.overallMessage}</div>
+        </div>
+      </div>
+    `;
+
+    hoursArea.innerHTML = "";
+    data.results.forEach(r => {
+      const container = document.createElement('div');
+      const classes = `p-4 rounded-lg border ${statusColor(r.status)}`;
+      container.className = classes;
+
+      const time = new Date(r.time).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">${time}</div>
+            <div class="text-xs text-slate-500">Temp: ${r.temp_c} °C • POP: ${(r.pop*100).toFixed(0)}%</div>
+          </div>
+
+          <div class="text-right">
+            <div class="text-sm">Vento: ${r.wind.kmh} km/h • ${r.wind.mph} mph</div>
+            <div class="text-sm">Rajada: ${r.gust.kmh} km/h • ${r.gust.mph} mph</div>
+            <div class="mt-1 text-sm font-medium">${r.status}</div>
+            <div class="text-xs text-slate-600 dark:text-slate-300 mt-1">${r.humanMessage}</div>
+          </div>
+        </div>
+      `;
+
+      hoursArea.appendChild(container);
+    });
+  }
+</script>
 </body>
 </html>
