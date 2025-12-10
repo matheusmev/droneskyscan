@@ -1,12 +1,12 @@
 // ================================
-// Carregar lista de drones
+// Carregar lista de drones (ARRAY)
 // ================================
 async function carregarDrones() {
     try {
-        const resposta = await fetch("/drones.json"); // <-- RAIZ DO PROJETO
+        const resposta = await fetch("/drones.json"); // raiz do projeto
         if (!resposta.ok) throw new Error("Erro ao carregar drones.json");
 
-        const drones = await resposta.json();
+        const drones = await resposta.json(); // agora é ARRAY
         const droneSelect = document.getElementById("droneSelect");
 
         droneSelect.innerHTML = '<option value="">Selecione...</option>';
@@ -43,14 +43,16 @@ document.getElementById("geoBtn").addEventListener("click", () => {
             const resp = await fetch(`https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}`);
             const dados = await resp.json();
 
-            const cidade = dados?.address?.city ||
-                           dados?.address?.town ||
-                           dados?.address?.village ||
-                           dados?.address?.state;
+            const cidade =
+                dados?.address?.city ||
+                dados?.address?.town ||
+                dados?.address?.village ||
+                dados?.address?.state;
 
             if (cidade) {
                 document.getElementById("cityInput").value = cidade;
-                document.getElementById("locationInfo").innerText = `Localização detectada: ${cidade}`;
+                document.getElementById("locationInfo").innerText =
+                    `Localização detectada: ${cidade}`;
             } else {
                 alert("Não foi possível identificar a cidade.");
             }
@@ -71,18 +73,11 @@ document.getElementById("checkBtn").addEventListener("click", async () => {
     const droneId = document.getElementById("droneSelect").value;
     const cidade = document.getElementById("cityInput").value.trim();
 
-    if (!droneId) {
-        alert("Selecione um drone.");
-        return;
-    }
-
-    if (!cidade) {
-        alert("Digite a cidade.");
-        return;
-    }
+    if (!droneId) return alert("Selecione um drone.");
+    if (!cidade) return alert("Digite a cidade.");
 
     try {
-        const resposta = await fetch(`/api/check?drone=${droneId}&city=${encodeURIComponent(cidade)}`);
+        const resposta = await fetch(`/api/weather?drone=${droneId}&city=${encodeURIComponent(cidade)}`);
         const dados = await resposta.json();
 
         if (dados.error) {
@@ -92,7 +87,7 @@ document.getElementById("checkBtn").addEventListener("click", async () => {
         }
 
         renderizarResultado(dados);
-        renderizarPrevisao(dados.forecast);
+        renderizarPrevisao(dados.results);
 
     } catch (erro) {
         console.error("Erro na checagem:", erro);
@@ -107,36 +102,29 @@ function renderizarResultado(data) {
     const result = document.getElementById("result");
 
     result.innerHTML = `
-      <h3>${data.city}</h3>
-      <p><strong>Condição:</strong> ${data.status}</p>
-
-      <ul class="result-list">
-        <li><strong>Vento:</strong> ${data.wind} km/h</li>
-        <li><strong>Gusts:</strong> ${data.gust} km/h</li>
-        <li><strong>Nuvens:</strong> ${data.clouds}%</li>
-        <li><strong>Visibilidade:</strong> ${data.visibility} km</li>
-      </ul>
-
-      <p class="status ${data.statusClass}">${data.message}</p>
+      <h3>${data.location.city}, ${data.location.country || ""}</h3>
+      <p><strong>Drone:</strong> ${data.drone.name}</p>
+      <p><strong>Condição geral:</strong> ${data.overall}</p>
+      <p>${data.overallMessage}</p>
     `;
 }
 
 // ================================
 // Renderizar previsão hora a hora
 // ================================
-function renderizarPrevisao(previsao) {
+function renderizarPrevisao(lista) {
     const container = document.getElementById("hourlyContainer");
     container.innerHTML = "";
 
-    previsao.forEach(h => {
+    lista.forEach(h => {
         const card = document.createElement("div");
         card.className = "hour-card";
 
         card.innerHTML = `
           <p class="hour">${h.time}</p>
-          <p>${h.temp}°C</p>
-          <p>🌬 ${h.wind} km/h</p>
-          <p>☁ ${h.clouds}%</p>
+          <p>${h.temp_c}°C</p>
+          <p>🌬 ${h.wind.kmh} km/h</p>
+          <p>☁ ${h.pop * 100}%</p>
         `;
 
         container.appendChild(card);
