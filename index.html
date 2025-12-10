@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DroneSkyScan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3b82f6',
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen">
+
+  <div class="max-w-xl mx-auto pt-10 px-5">
+    <h1 class="text-3xl font-bold text-primary text-center mb-6">DroneSkyScan</h1>
+
+    <label class="block mb-2">Modelo do drone:</label>
+    <select id="droneModel" class="w-full p-3 rounded bg-gray-800 mb-4">
+      <option>DJI Mini 3 Pro</option>
+      <option>DJI Mini 4 Pro</option>
+    </select>
+
+    <label class="block mb-2">Cidade:</label>
+    <input id="city" placeholder="Ex: Tramandaí"
+      class="w-full p-3 rounded bg-gray-800 mb-4" />
+
+    <button onclick="checkWeather()"
+      class="w-full p-3 mt-2 rounded bg-primary text-white font-bold hover:bg-blue-600">
+      Ver Condições de Voo
+    </button>
+
+    <div id="result" class="mt-6"></div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
