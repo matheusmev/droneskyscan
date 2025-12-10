@@ -1,22 +1,22 @@
-{
-  "DJI Mini 2": { "maxWindKmh": 38 },
-  "DJI Mini 3": { "maxWindKmh": 38 },
-  "DJI Mini 3 Pro": { "maxWindKmh": 43 },
-  "DJI Mini 4 Pro": { "maxWindKmh": 45 },
+[
+  { "id": "DJI Mini 2", "name": "DJI Mini 2", "maxWindKmh": 38 },
+  { "id": "DJI Mini 3", "name": "DJI Mini 3", "maxWindKmh": 38 },
+  { "id": "DJI Mini 3 Pro", "name": "DJI Mini 3 Pro", "maxWindKmh": 43 },
+  { "id": "DJI Mini 4 Pro", "name": "DJI Mini 4 Pro", "maxWindKmh": 45 },
 
-  "DJI Air 2S": { "maxWindKmh": 42 },
-  "DJI Air 3": { "maxWindKmh": 46 },
+  { "id": "DJI Air 2S", "name": "DJI Air 2S", "maxWindKmh": 42 },
+  { "id": "DJI Air 3", "name": "DJI Air 3", "maxWindKmh": 46 },
 
-  "DJI Mavic 2 Pro": { "maxWindKmh": 38 },
-  "DJI Mavic 3 Classic": { "maxWindKmh": 43 },
-  "DJI Mavic 3 Cine": { "maxWindKmh": 43 },
-  "DJI Mavic 3 Pro": { "maxWindKmh": 43 },
+  { "id": "DJI Mavic 2 Pro", "name": "DJI Mavic 2 Pro", "maxWindKmh": 38 },
+  { "id": "DJI Mavic 3 Classic", "name": "DJI Mavic 3 Classic", "maxWindKmh": 43 },
+  { "id": "DJI Mavic 3 Cine", "name": "DJI Mavic 3 Cine", "maxWindKmh": 43 },
+  { "id": "DJI Mavic 3 Pro", "name": "DJI Mavic 3 Pro", "maxWindKmh": 43 },
 
-  "DJI Matrice 300 RTK": { "maxWindKmh": 54 },
-  "DJI Matrice 350 RTK": { "maxWindKmh": 55 },
+  { "id": "DJI Matrice 300 RTK", "name": "DJI Matrice 300 RTK", "maxWindKmh": 54 },
+  { "id": "DJI Matrice 350 RTK", "name": "DJI Matrice 350 RTK", "maxWindKmh": 55 },
 
-  "DJI Agras T10": { "maxWindKmh": 27 },
-  "DJI Agras T20": { "maxWindKmh": 29 },
-  "DJI Agras T30": { "maxWindKmh": 36 },
-  "DJI Agras T40": { "maxWindKmh": 36 }
-}
+  { "id": "DJI Agras T10", "name": "DJI Agras T10", "maxWindKmh": 27 },
+  { "id": "DJI Agras T20", "name": "DJI Agras T20", "maxWindKmh": 29 },
+  { "id": "DJI Agras T30", "name": "DJI Agras T30", "maxWindKmh": 36 },
+  { "id": "DJI Agras T40", "name": "DJI Agras T40", "maxWindKmh": 36 }
+]
